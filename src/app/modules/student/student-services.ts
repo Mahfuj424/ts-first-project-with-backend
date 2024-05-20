@@ -2,8 +2,13 @@ import { StudentModel } from '../student-model';
 import { Student } from './student-interface';
 
 // post a student into db
-const createStudentIntoDB = async (student: Student) => {
-  const result = await StudentModel.create(student);
+const createStudentIntoDB = async (studentData: Student) => {
+  // const result = await StudentModel.create(student); built in static mathod
+
+  // built in instance mathod
+  const student = new StudentModel(studentData);
+  const result = await student.save();
+
   return result;
 };
 
