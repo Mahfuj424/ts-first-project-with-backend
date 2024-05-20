@@ -39,10 +39,10 @@ const createStudent = async (req: Request, res: Response) => {
       message: 'Student is created successfully',
       data: result,
     });
-  } catch (err) {
+  } catch (err: any) {
     res.status(200).json({
       success: false,
-      message: 'Somthing went wrong',
+      message: err.message || 'Somthing went wrong',
       error: err,
     });
   }
@@ -58,8 +58,12 @@ const getAllStudent = async (req: Request, res: Response) => {
       message: 'Student are retrivied successfully',
       data: result,
     });
-  } catch (err) {
-    console.log(err);
+  } catch (err: any) {
+    res.status(400).json({
+      success: false,
+      message: err.message || 'Somthing went wrong',
+      error: err,
+    });
   }
 };
 
@@ -73,8 +77,58 @@ const getSingleStudent = async (req: Request, res: Response) => {
       message: 'Student is retrivied successfully',
       data: result,
     });
-  } catch (err) {
-    console.log(err);
+  } catch (err: any) {
+    res.status(400).json({
+      success: false,
+      message: err.message || 'Somthing went wrong',
+      error: err,
+    });
+  }
+};
+
+const deleteStudent = async (req: Request, res: Response) => {
+  try {
+    const studentId = req.params.studentId;
+    console.log(studentId);
+    const result = await StudentServices.deleteStudentFromDB(studentId);
+    res.status(200).json({
+      success: true,
+      message: 'Student is deleted successfully',
+      data: result,
+    });
+  } catch (err: any) {
+    res.status(400).json({
+      success: false,
+      message: err.message || 'Somthing went wrong',
+      error: err,
+    });
+  }
+};
+
+const updateStudent = async (req: Request, res: Response) => {
+  try {
+    const studentId = req.params.studentId;
+    const studentData = req.body.student;
+
+    // Validate with zod or Joi
+    const validatedData = studentValidationSchema.parse(studentData);
+
+    const result = await StudentServices.updateStudentInDB(
+      studentId,
+      validatedData,
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Student updated successfully',
+      data: result,
+    });
+  } catch (err: any) {
+    res.status(400).json({
+      success: false,
+      message: err.message || 'Something went wrong',
+      error: err,
+    });
   }
 };
 
@@ -82,4 +136,6 @@ export const StudentControllers = {
   createStudent,
   getAllStudent,
   getSingleStudent,
+  deleteStudent,
+  updateStudent,
 };
