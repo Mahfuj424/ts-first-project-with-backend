@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import bcrypt from 'bcrypt';
+
 import {
   TGuardian,
   TLocalGuardian,
@@ -7,7 +7,6 @@ import {
   StudentModel,
   TUserName,
 } from './student-interface';
-import config from '../../config';
 
 const userNameSchema = new Schema<TUserName>({
   firstName: {
@@ -72,7 +71,12 @@ const localGuradianSchema = new Schema<TLocalGuardian>({
 const studentSchema = new Schema<TStudent, StudentModel>(
   {
     id: { type: String, required: true, unique: true },
-    password: { type: String, required: true, maxlength: 20 },
+    user:{
+     type: Schema.Types.ObjectId,
+     required:[true, 'user id is required'],
+     unique:true,
+     ref:"User"
+    },
     name: {
       type: userNameSchema,
       required: true,
@@ -140,39 +144,24 @@ studentSchema.virtual('fullName').get(function () {
 });
 
 // pre middleware
-studentSchema.pre('save', async function (next) {
-  // console.log(this, "pre data before saving mongodb");
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
-  const user = this;
-  user.password = await bcrypt.hash(
-    user.password,
-    Number(config.bcrypt_salt_rounds),
-  );
-  next();
-});
 
-// post middleware
-studentSchema.post('save', function (doc, next) {
-  doc.password = '';
-  next();
-});
 
 // Query middleware
-studentSchema.pre('find', async function (next) {
-  this.find({ isDeleted: { $ne: true } });
-  next();
-});
+// studentSchema.pre('find', async function (next) {
+//   this.find({ isDeleted: { $ne: true } });
+//   next();
+// });
 
-studentSchema.pre('findOne', async function (next) {
-  this.find({ isDeleted: { $ne: true } });
-  next();
-});
+// studentSchema.pre('findOne', async function (next) {
+//   this.find({ isDeleted: { $ne: true } });
+//   next();
+// });
 
-// query with aggregate
-studentSchema.pre('aggregate', async function (next) {
-  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
-  next();
-});
+// // query with aggregate
+// studentSchema.pre('aggregate', async function (next) {
+//   this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+//   next();
+// });
 
 // creating a custom mathods
 // studentSchema.methods.isUserExists = async function (id:string){
