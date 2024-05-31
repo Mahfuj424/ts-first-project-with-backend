@@ -1,14 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import httpStatus from 'http-status';
 import sendResponse from '../../utils/sendResponse';
 import { UserServices } from './user-service';
-import { NextFunction, Request, Response } from 'express';
+import catchAsync from '../../utils/catchAsync';
 
-const createStudent = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
+
+const createStudent = catchAsync(async (req, res, next) => {
+
     const { password, student: studentData } = req.body;
 
     const result = await UserServices.createStudentIntoDB(
@@ -22,10 +20,7 @@ const createStudent = async (
       message: 'Student is created successfully',
       data: result,
     });
-  } catch (err) {
-    next(err);
-  }
-};
+});
 
 export const UserController = {
   createStudent,

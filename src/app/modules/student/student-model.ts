@@ -121,10 +121,6 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       required: true,
     },
     profileImg: { type: String },
-    isDeleted: {
-      type: Boolean,
-      default: false,
-    },
   },
   {
     toJSON: {
