@@ -120,6 +120,10 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       type: localGuradianSchema,
       required: true,
     },
+    academicSemester:{
+      type:Schema.Types.ObjectId,
+      ref: "AcademicSemester"
+    },
     profileImg: { type: String },
   },
   {
