@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Schema, model } from 'mongoose';
 
 import {
@@ -71,11 +72,11 @@ const localGuradianSchema = new Schema<TLocalGuardian>({
 const studentSchema = new Schema<TStudent, StudentModel>(
   {
     id: { type: String, required: true, unique: true },
-    user:{
-     type: Schema.Types.ObjectId,
-     required:[true, 'user id is required'],
-     unique:true,
-     ref:"User"
+    user: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'user id is required'],
+      unique: true,
+      ref: 'User',
     },
     name: {
       type: userNameSchema,
@@ -120,17 +121,17 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       type: localGuradianSchema,
       required: true,
     },
-    isDeleted:{
-      type:Boolean,
-      default:false
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
-    academicSemester:{
-      type:Schema.Types.ObjectId,
-      ref: "AcademicSemester"
+    academicSemester: {
+      type: Schema.Types.ObjectId,
+      ref: 'AcademicSemester',
     },
-    academicDepartment:{
-      type:Schema.Types.ObjectId,
-      ref:'AcademicDepartment'
+    academicDepartment: {
+      type: Schema.Types.ObjectId,
+      ref: 'AcademicDepartment',
     },
     profileImg: { type: String },
   },
@@ -147,7 +148,6 @@ studentSchema.virtual('fullName').get(function () {
 });
 
 // pre middleware
-
 
 // Query middleware
 // studentSchema.pre('find', async function (next) {
@@ -171,6 +171,8 @@ studentSchema.virtual('fullName').get(function () {
 //   const existsUser = Student.findOne({id});
 //   return existsUser;
 // }
+
+
 
 // creating a custom static
 studentSchema.statics.isUserExists = async function (id: string) {

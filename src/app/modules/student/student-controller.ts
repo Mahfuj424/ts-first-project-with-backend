@@ -4,8 +4,7 @@ import { StudentServices } from './student-services';
 import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
-
-
+import { Student } from './student-model';
 
 // get all student request
 const getAllStudent = catchAsync(async (req, res, next) => {
@@ -33,6 +32,7 @@ const getSingleStudent = catchAsync(async (req, res, next) => {
 
 const deleteStudent = catchAsync(async (req, res, next) => {
   const studentId = req.params.studentId;
+
   const result = await StudentServices.deleteStudentFromDB(studentId);
   sendResponse(res, {
     statusCode: httpStatus.OK,

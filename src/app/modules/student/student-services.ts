@@ -1,5 +1,9 @@
 import { Student } from './student-model';
 import { TStudent } from './student-interface';
+import mongoose from 'mongoose';
+import AppError from '../../errors/AppError';
+import httpStatus from 'http-status';
+import { User } from '../user/user-model';
 
 // get all student from db
 const getAllStudentFromDB = async () => {
@@ -17,7 +21,7 @@ const getAllStudentFromDB = async () => {
 // get single student from db
 const getSingleStudentFromDB = async (id: string) => {
   // const result = await Student.find({ id });
-  const result = await Student.findById(id)
+  const result = await Student.findOne({ id })
     .populate('academicSemester')
     .populate({
       path: 'academicDepartment',
@@ -30,13 +34,85 @@ const getSingleStudentFromDB = async (id: string) => {
 
 // delete single doc from db
 const deleteStudentFromDB = async (id: string) => {
-  const result = await Student.deleteOne({ _id: id }, { isDeleted: true });
-  return result;
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    const deleteStudent = await Student.findOneAndUpdate(
+      { id: id },
+      { isDeleted: true },
+      { new: true, session },
+    );
+
+    if (!deleteStudent) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed To delete student');
+    }
+
+    const deleteUser = await User.findOneAndUpdate(
+      { id: id },
+      { isDeleted: true },
+      { new: true, session },
+    );
+
+    if (!deleteUser) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to Delete user');
+    }
+
+    session.commitTransaction();
+    session.endSession();
+
+    return deleteStudent;
+  } catch (err) {
+    session.abortTransaction();
+    session.endSession();
+    throw new Error('failed to create Student');
+  }
 };
 
-const updateStudentInDB = async (id: string, studentData: TStudent) => {
-  const result = await Student.findOneAndUpdate({ id }, studentData, {
+const updateStudentInDB = async (
+  id: string,
+  studentData: Partial<TStudent>,
+) => {
+  
+  const { name, guardian, localGuardian, ...remainingStudentData } =
+    studentData;
+
+  const modifiedUpdatedData: Record<string, unknown> = {
+    ...remainingStudentData,
+  };
+
+
+  /**
+   * premitive data update
+   * contactNo = "00000"
+   *
+   * but not premitive data
+   * name.firstName = ""
+   */
+
+  if (name && Object.keys(name).length) {
+    for (const [key, value] of Object.entries(name)) {
+      modifiedUpdatedData[`name.${key}`] = value;
+    }
+  }
+
+  if (guardian && Object.keys(guardian).length) {
+    for (const [key, value] of Object.entries(guardian)) {
+      modifiedUpdatedData[`guardian.${key}`] = value;
+    }
+  }
+
+  if (localGuardian && Object.keys(localGuardian).length) {
+    for (const [key, value] of Object.entries(localGuardian)) {
+      modifiedUpdatedData[`localGuardian.${key}`] = value;
+    }
+  }
+  console.log("modifiend data",modifiedUpdatedData);
+
+  const result = await Student.findOneAndUpdate({ id }, modifiedUpdatedData, {
     new: true,
+    runValidators: true,
   });
   return result;
 };
