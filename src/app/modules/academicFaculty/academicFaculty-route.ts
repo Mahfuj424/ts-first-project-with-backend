@@ -7,6 +7,9 @@ const router = Router();
 
 router.post(
   '/create-academic-faculty',
+  validateRequest(
+    AcademicFacultyValidations.createAcademicFacultyValidaionSchema,
+  ),
   AcademicFacultyControllers.createAcademicFaculty,
 );
 router.get('/:facultyId', AcademicFacultyControllers.getSingleAcademicFaculty);

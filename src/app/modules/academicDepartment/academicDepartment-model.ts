@@ -21,19 +21,19 @@ const academicDepartmentSchema = new Schema<TAcademicDepartment>(
   },
 );
 
-academicDepartmentSchema.pre('save', async function (next) {
-  const isExistsDepartment = await AcademicDepartment.findOne({
-    name: this.name,
-  });
+// academicDepartmentSchema.pre('save', async function (next) {
+//   const isExistsDepartment = await AcademicDepartment.findOne({
+//     name: this.name,
+//   });
 
-  if (isExistsDepartment) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      'This department is already exist!',
-    );
-  }
-  next();
-});
+//   if (isExistsDepartment) {
+//     throw new AppError(
+//       httpStatus.NOT_FOUND,
+//       'This department is already exist!',
+//     );
+//   }
+//   next();
+// });
 
 academicDepartmentSchema.pre('findOneAndUpdate', async function (next) {
   const query = this.getQuery();

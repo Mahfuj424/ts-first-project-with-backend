@@ -12,14 +12,16 @@ app.use(cors());
 
 app.use('/api/v1', router);
 
-app.get('/', (req: Request, res: Response) => {
-  res.send({ message: 'PHero university server is running' });
-});
+const test = async (req: Request, res: Response) => {
+  // res.send({ message: 'PHero university server is running' });
+  Promise.reject()
+};
 
+app.get('/', test);
 
-app.use(globalErrorHandler)
+app.use(globalErrorHandler);
 
 // not found route
-app.use(notFound)
+app.use(notFound);
 
 export default app;
