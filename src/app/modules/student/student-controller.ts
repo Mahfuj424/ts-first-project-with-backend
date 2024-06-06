@@ -8,7 +8,8 @@ import { Student } from './student-model';
 
 // get all student request
 const getAllStudent = catchAsync(async (req, res, next) => {
-  const result = await StudentServices.getAllStudentFromDB();
+
+  const result = await StudentServices.getAllStudentFromDB(req.query);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

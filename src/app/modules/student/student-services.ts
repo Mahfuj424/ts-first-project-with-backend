@@ -6,8 +6,28 @@ import httpStatus from 'http-status';
 import { User } from '../user/user-model';
 
 // get all student from db
-const getAllStudentFromDB = async () => {
-  const result = await Student.find()
+const getAllStudentFromDB = async (query: Record<string, unknown>) => {
+  const queryObj = { ...query };
+
+  const studentSearchableFields = ['email', 'name.firstName', 'presentAddress'];
+  let searchTerm = '';
+  if (query?.searchTerm) {
+    searchTerm = query?.searchTerm as string;
+  }
+
+  const searchQuery = Student.find({
+    $or: studentSearchableFields.map((field) => ({
+      [field]: { $regex: searchTerm, $options: 'i' },
+    })),
+  });
+
+  // filltering
+  const excludeFields = ['searchTerm', 'sort', 'limit'];
+  excludeFields.forEach((ele) => delete queryObj[ele]);
+  console.log({ query, queryObj });
+
+  const fillterQuery = searchQuery
+    .find(queryObj)
     .populate('academicSemester')
     .populate({
       path: 'academicDepartment',
@@ -15,7 +35,22 @@ const getAllStudentFromDB = async () => {
         path: 'academicFaculty',
       },
     });
-  return result;
+
+  let sort = '-createdAt';
+  if (query.sort) {
+    sort = query?.sort as string;
+  }
+
+  const sortQuery = fillterQuery.sort(sort);
+
+  let limit = 1;
+  if (query.limit) {
+    limit = query.limit as number;
+  }
+
+  const limitQuery = await sortQuery.limit(limit);
+
+  return limitQuery;
 };
 
 // get single student from db
@@ -74,14 +109,12 @@ const updateStudentInDB = async (
   id: string,
   studentData: Partial<TStudent>,
 ) => {
-  
   const { name, guardian, localGuardian, ...remainingStudentData } =
     studentData;
 
   const modifiedUpdatedData: Record<string, unknown> = {
     ...remainingStudentData,
   };
-
 
   /**
    * premitive data update
@@ -108,7 +141,7 @@ const updateStudentInDB = async (
       modifiedUpdatedData[`localGuardian.${key}`] = value;
     }
   }
-  console.log("modifiend data",modifiedUpdatedData);
+  console.log('modifiend data', modifiedUpdatedData);
 
   const result = await Student.findOneAndUpdate({ id }, modifiedUpdatedData, {
     new: true,
