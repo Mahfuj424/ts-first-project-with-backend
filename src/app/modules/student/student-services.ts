@@ -22,7 +22,7 @@ const getAllStudentFromDB = async (query: Record<string, unknown>) => {
   });
 
   // filltering
-  const excludeFields = ['searchTerm', 'sort', 'limit'];
+  const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
   excludeFields.forEach((ele) => delete queryObj[ele]);
   console.log({ query, queryObj });
 
@@ -43,12 +43,29 @@ const getAllStudentFromDB = async (query: Record<string, unknown>) => {
 
   const sortQuery = fillterQuery.sort(sort);
 
+  let page = 1;
   let limit = 1;
+  let skip = 0;
+
   if (query.limit) {
-    limit = query.limit as number;
+    limit = Number(query.limit) as number;
   }
 
-  const limitQuery = await sortQuery.limit(limit);
+  if (query.page) {
+    page = Number(query.page);
+    skip = (page - 1) * limit;
+  }
+  const paginateQuery = sortQuery.skip(skip);
+
+  let fields = '-__v';
+
+  if (query.fields) {
+    fields = (query.fields as string).split(',').join(' ');
+  }
+
+  // const fieldsQuery = 
+
+  const limitQuery = await paginateQuery.limit(limit);
 
   return limitQuery;
 };
