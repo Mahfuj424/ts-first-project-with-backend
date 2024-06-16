@@ -92,7 +92,7 @@ const updateStudentValidationSchema = z.object({
       .object({
         name: updateUserNameValidationSchema.optional(),
         gender: z.enum(['male', 'female', 'others']).optional(),
-        dateOfBirth: z.string().optional(),
+        dateOfBirth: z.string(),
         email: z.string().email().optional(),
         contactNo: z.string().optional(),
         emergencyContactNo: z.string().optional(),

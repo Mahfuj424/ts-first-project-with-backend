@@ -21,7 +21,7 @@ const getAllStudent = catchAsync(async (req, res, next) => {
 
 // get single student request
 const getSingleStudent = catchAsync(async (req, res, next) => {
-  const studentId = req.params.studentId;
+  const studentId = req.params.id;
   const result = await StudentServices.getSingleStudentFromDB(studentId);
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -32,7 +32,7 @@ const getSingleStudent = catchAsync(async (req, res, next) => {
 });
 
 const deleteStudent = catchAsync(async (req, res, next) => {
-  const studentId = req.params.studentId;
+  const studentId = req.params.id;
 
   const result = await StudentServices.deleteStudentFromDB(studentId);
   sendResponse(res, {
@@ -44,7 +44,7 @@ const deleteStudent = catchAsync(async (req, res, next) => {
 });
 
 const updateStudent = catchAsync(async (req, res, next) => {
-  const studentId = req.params.studentId;
+  const studentId = req.params.id;
   const studentData = req.body.student;
 
   // Validate with zod or Joi
