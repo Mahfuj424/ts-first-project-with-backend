@@ -148,9 +148,9 @@ const updateSemesterRegistrationIntoDB = async (
 };
 
 // const deleteSemesterRegistrationFromDB = async (id: string) => {
-//   /** 
+//   /**
 //   * Step1: Delete associated offered courses.
-//   * Step2: Delete semester registraton when the status is 
+//   * Step2: Delete semester registraton when the status is
 //   'UPCOMING'.
 //   **/
 
@@ -226,5 +226,5 @@ export const SemesterRegistrationService = {
   getAllSemesterRegistrationsFromDB,
   getSingleSemesterRegistrationsFromDB,
   updateSemesterRegistrationIntoDB,
-//   deleteSemesterRegistrationFromDB,
+  //   deleteSemesterRegistrationFromDB,
 };
