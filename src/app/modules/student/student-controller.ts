@@ -47,8 +47,6 @@ const updateStudent = catchAsync(async (req, res, next) => {
   const studentId = req.params.id;
   const studentData = req.body.student;
 
-  // Validate with zod or Joi
-  // const validatedData = studentValidationSchema.parse(studentData);
 
   const result = await StudentServices.updateStudentInDB(
     studentId,
